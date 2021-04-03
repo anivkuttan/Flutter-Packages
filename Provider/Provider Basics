@@ -7,9 +7,15 @@ void main() => runApp(MyApp());
 //Change Notifier is come with flutter(material.dart)
 //provider Package can UnderStand ChangeNotifier
 class Data with ChangeNotifier {
-  String counter = 'One Two Three ';
-  void changeCounter() {
-    counter = '1,2,3,4,5';
+  String dataText = 'One Two Three ';
+  int dataCounter = 0;
+  void incressCounter() {
+    dataCounter++;
+    notifyListeners();
+  }
+
+  void changeText() {
+    dataText = '1,2,3,4,5';
     notifyListeners();
   }
 }
@@ -53,12 +59,12 @@ class _HomePageState extends State<HomePage> {
           children: [
             Text(
                 ' In this class when the value change happen the Hole widget tree are reloaded'),
-            Text(Provider.of<Data>(context).counter),
+            Text(Provider.of<Data>(context).dataText),
             SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
                 // hear listen = false because we calling function hear lisners not needed
-                Provider.of<Data>(context, listen: false).changeCounter();
+                Provider.of<Data>(context, listen: false).changeText();
               },
               child: Text('Click Me to Change the Counter'),
             )
@@ -79,13 +85,27 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
-    final counter = Provider.of<Data>(context).counter;
+    print('build reloaded setting Page');
+    final dataText = Provider.of<Data>(context).dataText;
+    final dataCounter = Provider.of<Data>(context).dataCounter;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
       body: Center(
-        child: Text(counter),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text(dataText),
+            Text('$dataCounter'),
+            ElevatedButton(
+              onPressed: () {
+                Provider.of<Data>(context, listen: false).incressCounter();
+              },
+              child: Text('Incerss Counter'),
+            ),
+          ],
+        ),
       ),
     );
   }
