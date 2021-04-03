@@ -1,0 +1,92 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+void main() => runApp(MyApp());
+
+//provider class
+//Change Notifier is come with flutter(material.dart)
+//provider Package can UnderStand ChangeNotifier
+class Data with ChangeNotifier {
+  String counter = 'One Two Three ';
+  void changeCounter() {
+    counter = '1,2,3,4,5';
+    notifyListeners();
+  }
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => Data(), // to initializing the provider class(data)
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: PageView(
+          children: [
+            HomePage('Home Page'),
+            SettingPage('Setting Page'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  final String title;
+  HomePage(this.title);
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  Widget build(BuildContext context) {
+    print("build reloaded home page");
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text(
+                ' In this class when the value change happen the Hole widget tree are reloaded'),
+            Text(Provider.of<Data>(context).counter),
+            SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                // hear listen = false because we calling function hear lisners not needed
+                Provider.of<Data>(context, listen: false).changeCounter();
+              },
+              child: Text('Click Me to Change the Counter'),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SettingPage extends StatefulWidget {
+  final String title;
+  SettingPage(this.title);
+  @override
+  _SettingPageState createState() => _SettingPageState();
+}
+
+class _SettingPageState extends State<SettingPage> {
+  @override
+  Widget build(BuildContext context) {
+    final counter = Provider.of<Data>(context).counter;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Text(counter),
+      ),
+    );
+  }
+}
