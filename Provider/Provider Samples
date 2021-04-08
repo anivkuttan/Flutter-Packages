@@ -1,0 +1,87 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: MyWidget(),
+    );
+  }
+}
+
+class MyWidget extends StatefulWidget {
+  @override
+  _MyWidgetState createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController ageController = TextEditingController();
+  TextEditingController colorController = TextEditingController();
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    ageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Home Page'),
+      ),
+      body: Center(
+        child: Form(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: Column(
+              // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                textField('Name', Icons.school, nameController),
+                textField('Age', Icons.android, ageController),
+                textField(
+                  'Email',
+                  Icons.email,
+                  colorController,
+                ),
+                ButtonBar(children: [
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: Text('Cancel'),
+                    style: ElevatedButton.styleFrom(primary: Colors.deepOrange),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: Text("Submit"),
+                  )
+                ]),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget textField(
+      String label, IconData icon, TextEditingController controller) {
+    return Column(
+      children: [
+        SizedBox(height: 20),
+        TextField(
+          decoration: InputDecoration(
+            labelText: label,
+            prefixIcon: Icon(icon),
+            border: OutlineInputBorder(),
+          ),
+        ),
+      ],
+    );
+  }
+}
