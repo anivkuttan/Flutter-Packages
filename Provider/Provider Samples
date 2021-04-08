@@ -8,6 +8,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: MyWidget(),
     );
   }
@@ -50,17 +51,27 @@ class _MyWidgetState extends State<MyWidget> {
                   Icons.email,
                   colorController,
                 ),
-                ButtonBar(children: [
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text('Cancel'),
-                    style: ElevatedButton.styleFrom(primary: Colors.deepOrange),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text("Submit"),
-                  )
-                ]),
+                ButtonBar(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: Text('Cancel'),
+                      style:
+                          ElevatedButton.styleFrom(primary: Colors.deepOrange),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ViewPage(),
+                          ),
+                        );
+                      },
+                      child: Text("Submit"),
+                    )
+                  ],
+                ),
               ],
             ),
           ),
@@ -82,6 +93,23 @@ class _MyWidgetState extends State<MyWidget> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class ViewPage extends StatefulWidget {
+  @override
+  _ViewPageState createState() => _ViewPageState();
+}
+
+class _ViewPageState extends State<ViewPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('View Page'),
+      ),
+      body: ListView(),
     );
   }
 }
