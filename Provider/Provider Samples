@@ -4,6 +4,20 @@ void main() {
   runApp(MyApp());
 }
 
+class User {
+  String name;
+  int age = 1;
+  String email;
+  User({this.name, this.age, this.email});
+}
+
+class DataProvider extends ChangeNotifier {
+  String name = 'Anikuttan from dataprovider';
+  List<User> users = <User>[
+    User(name: 'Anikuttan', age: 24, email: 'ani@gamil.com'),
+  ];
+}
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -60,17 +74,21 @@ class _MyWidgetState extends State<MyWidget> {
                           ElevatedButton.styleFrom(primary: Colors.deepOrange),
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ViewPage(),
-                          ),
-                        );
-                      },
+                      onPressed: () {},
                       child: Text("Submit"),
                     )
                   ],
+                ), //buttonBar
+                SizedBox(height: 300),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                      child: Text('Next'),
+                      onPressed: () {
+                        Route routeName =
+                            MaterialPageRoute(builder: (context) => ViewPage());
+                        Navigator.push(context, routeName);
+                      }),
                 ),
               ],
             ),
@@ -103,13 +121,22 @@ class ViewPage extends StatefulWidget {
 }
 
 class _ViewPageState extends State<ViewPage> {
+  DataProvider data;
+  @override
+  void initState() {
+    super.initState();
+    data = DataProvider();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('View Page'),
       ),
-      body: ListView(),
+      body: ListView(children: [
+        Text(data.name, style: TextStyle(fontSize: 50, color: Colors.red))
+      ]),
     );
   }
 }
