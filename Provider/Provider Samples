@@ -1,34 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class User {
-  String name;
-  int age = 1;
-  String email;
-  User({this.name, this.age, this.email});
-}
-
-class DataProvider extends ChangeNotifier {
-  List<User> users = <User>[
-    User(name: 'Ani20', age: 20, email: 'ani@gamil.com'),
-    User(name: 'kuttan23', age: 23, email: 'kuttan@gamil.com'),
-    User(name: 'Anu24', age: 24, email: 'anu@gamil.com'),
-  ];
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => DataProvider(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: MyWidget(),
-      ),
+    return MaterialApp(
+      home: MyWidget(),
     );
   }
 }
@@ -39,120 +17,79 @@ class MyWidget extends StatefulWidget {
 }
 
 class _MyWidgetState extends State<MyWidget> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController ageController = TextEditingController();
-  TextEditingController colorController = TextEditingController();
+  String email;
+  TextEditingController emailController = TextEditingController();
 
   @override
-  void dispose() {
-    nameController.dispose();
-    ageController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    email = emailController.text;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Page'),
-      ),
-      body: Center(
-        child: Form(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            child: Column(
-              // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                textField('Name', Icons.school, nameController),
-                textField('Age', Icons.android, ageController),
-                textField(
-                  'Email',
-                  Icons.email,
-                  colorController,
-                ),
-                ButtonBar(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: Text('Cancel'),
-                      style:
-                          ElevatedButton.styleFrom(primary: Colors.deepOrange),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: Text("Submit"),
-                    )
-                  ],
-                ), //buttonBar
-                SizedBox(height: 300),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                      child: Text('Next'),
-                      onPressed: () {
-                        Route routeName =
-                            MaterialPageRoute(builder: (context) => ViewPage());
-                        Navigator.push(context, routeName);
-                      }),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget textField(
-      String label, IconData icon, TextEditingController controller) {
-    return Column(
-      children: [
-        SizedBox(height: 20),
-        TextField(
-          decoration: InputDecoration(
-            labelText: label,
-            prefixIcon: Icon(icon),
-            border: OutlineInputBorder(),
-          ),
-        ),
-      ],
+        title: Text("AppBar"),
+      ), //appbar
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: Center(
+          child: Column(children: [
+            TextField(
+              controller: emailController,
+              decoration: InputDecoration(
+                  labelText: 'Email', border: OutlineInputBorder()),
+            ), //textfield
+            SizedBox(height: 20), //sizedBox
+            ElevatedButton(
+              child: Text('Next'),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => FirstPage()));
+              },
+            ), //button
+          ]), //column
+        ), //center
+      ), //padding
     );
   }
 }
 
-class ViewPage extends StatefulWidget {
+class User{
+  String name;
+  String email;
+  int id;
+  User({this.id,this.name,this.email});
+} 
+
+class FirstPage extends StatefulWidget {
   @override
-  _ViewPageState createState() => _ViewPageState();
+  _FirstPageState createState() => _FirstPageState();
 }
 
-class _ViewPageState extends State<ViewPage> {
-  // DataProvider data;
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   data = DataProvider();
-  // }
-
+class _FirstPageState extends State<FirstPage> {
+  List<User> listViewItem;
+  @override
+void initState() {
+  super.initState();
+  listViewItem =[User(id:2,name:'kuttan',email:'email of kuttan') ];
+} 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('View Page'),
-      ),
+        title: Text('Second Page'),
+      ), //appbar
       body: ListView.builder(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          itemCount: 1,
-          itemBuilder: (context, indext) {
-            return Card(
-              elevation: 20,
-              child: ListTile(
-                //Text(data.users[indext].name),
-                title: Text('kjlso'),
-                subtitle: Text(''),
-                leading: Icon(Icons.school),
-              ),
-            );
-          }),
-    );
+          itemCount: listViewItem.length,
+          itemBuilder: (BuildContext context, int indext) {
+            return ListTile(
+              title: Text(listViewItem[indext].name), //title
+              onTap: () {},
+              leading: Icon(Icons.add),
+            ); //listttile
+          }), //listviewbuilder
+    ); //scaffold
   }
 }
