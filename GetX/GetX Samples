@@ -1,0 +1,86 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  // To inizilazing controller to acess
+  final DataController controller = Get.put(DataController());
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('GetX Demo'),
+      ),
+      body: Center(
+        child: Obx(
+          () {
+            return ListView.builder(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              itemCount: controller.users.length,
+              itemBuilder: (context, indext) {
+                return Card(
+                  elevation: 20,
+                  child: ListTile(
+                    title: Text(controller.users[indext].name),
+                  ), //listTile
+                ); //card
+              },
+            ); //listView buider
+          },
+        ), //box
+      ), //center
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => EntryScreen()));
+        },
+      ),
+    );
+  }
+}
+
+class EntryScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Entry Page'),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            TextField(
+              autofocus: true,
+              decoration:
+                  InputDecoration(hintText: 'alkc', border: InputBorder.none),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class Users {
+  String name;
+  int age;
+  Users({this.name, this.age});
+}
+
+class DataController extends GetxController {
+  var users = <Users>[Users(name: 'Anikuttan', age: 24)].obs;
+}
