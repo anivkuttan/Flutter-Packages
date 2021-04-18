@@ -1,0 +1,66 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+/*
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import '../../../get_core/get_core.dart';
+import '../../../get_instance/get_instance.dart';
+import '../../../get_state_manager/get_state_manager.dart';
+import '../../../get_utils/get_utils.dart';
+import '../../get_navigation.dart';
+import 'root_controller.dart';
+*/
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MyWidget(),
+    );
+  }
+}
+
+class MyWidget extends StatelessWidget {
+  // To inizilazing controller to acess
+  final DataController controller = Get.put(DataController());
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('GetX Demo'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Obx(() {
+              return Text(
+                'GetX Statemanagement text :${controller.count} ',
+                style: TextStyle(fontSize: 30, color: Colors.red),
+              );
+            }),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          controller.incrementCount();
+        },
+      ),
+    );
+  }
+}
+
+class DataController extends GetxController {
+  RxInt count = 0.obs;
+  RxInt incrementCount() {
+    return count++;
+  }
+}
