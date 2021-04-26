@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,6 +17,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
 class HomePage extends StatelessWidget {
   // To inizilazing controller to acess
   final DataController controller = Get.put(DataController());
@@ -27,12 +30,12 @@ class HomePage extends StatelessWidget {
           IconButton(
               icon: Icon(Icons.favorite),
               onPressed: () {
-                Get.to(Favorite());
+                Get.to(() => Favorite());
               }),
           IconButton(
               icon: Icon(Icons.archive),
               onPressed: () {
-                Get.to(Archive());
+                Get.to(() => Archive());
               })
         ],
       ),
@@ -72,6 +75,9 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   onDismissed: (DismissDirection direction) {
+                    // To controll the direction of dissmissed
+                    // on right (Start to end) item go to achive
+                    // on left (end to Start) item go to favorite
                     var removedItem = controller.items[indext];
                     controller.items.removeAt(indext);
                     if (direction == DismissDirection.endToStart) {
@@ -83,9 +89,12 @@ class HomePage extends StatelessWidget {
                   child: Card(
                     elevation: 10,
                     child: SizedBox(
-                      height: 70,
+                      height: 50,
                       child: ListTile(
                         title: Text(controller.items[indext].productName),
+                        onTap: () {
+                          Get.to(() => EntryScreen(indext: indext));
+                        },
                       ),
                     ),
                   ),
@@ -98,7 +107,7 @@ class HomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          Get.to(EntryScreen());
+          Get.to(() => EntryScreen());
         },
       ),
     );
@@ -106,10 +115,19 @@ class HomePage extends StatelessWidget {
 }
 
 class EntryScreen extends StatelessWidget {
-  final TextEditingController textController = TextEditingController();
-  final DataController controller = Get.find();
+  final DataController controller = Get.find<DataController>();
+  final int indext;
+  EntryScreen({this.indext});
+
   @override
   Widget build(BuildContext context) {
+    String text = '';
+    if (this.indext != null) {
+      text = controller.items[this.indext].productName;
+    }
+    final TextEditingController textController =
+        TextEditingController(text: text);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Entry Page'),
@@ -121,7 +139,7 @@ class EntryScreen extends StatelessWidget {
             Expanded(
               child: TextField(
                 controller: textController,
-                // autofocus: true,
+                autofocus: true,
                 maxLines: 99,
                 decoration: InputDecoration(
                     hintText: 'alkc',
@@ -135,13 +153,15 @@ class EntryScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.save),
           onPressed: () {
-            if (textController.text.isEmpty) {
-              Get.back();
+            if (this.indext != null) {
+              var editing = controller.items[this.indext];
+              editing.productName = textController.text;
+              controller.items[this.indext] = editing;
             } else {
               Product product = Product(productName: textController.text);
               controller.items.add(product);
-              Get.back();
             }
+            Get.back();
           }),
     );
   }
@@ -157,33 +177,38 @@ class Favorite extends StatelessWidget {
         actions: [
           Icon(Icons.favorite),
           IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: controller.deleteFavoriteItems),
+            icon: Icon(Icons.delete),
+            onPressed: controller.deleteFavoriteItems,
+          ),
         ],
       ),
-      body: Obx(
-        () {
-          return controller.favoriteItems.length == 0
-              ? Center(
-                  child: Text(
-                    'Empty List',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                )
-              : ListView.builder(
-                  itemCount: controller.favoriteItems.length,
-                  itemBuilder: (context, indext) {
-                    return Card(
-                      elevation: 10,
-                      child: ListTile(
-                        title: Text(
-                            '${controller.favoriteItems[indext].productName}'),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Obx(
+          () {
+            return controller.favoriteItems.length == 0
+                ? Center(
+                    child: Text(
+                      'Empty List',
+                      style: TextStyle(
+                        fontSize: 20,
                       ),
-                    );
-                  });
-        },
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: controller.favoriteItems.length,
+                    itemBuilder: (context, indext) {
+                      return Card(
+                        elevation: 10,
+                        child: ListTile(
+                          title: Text(
+                              '${controller.favoriteItems[indext].productName}'),
+                        ),
+                      );
+                    },
+                  );
+          },
+        ),
       ),
     );
   }
@@ -199,33 +224,37 @@ class Archive extends StatelessWidget {
         actions: [
           Icon(Icons.archive),
           IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: controller.deleteAchivedItem),
+            icon: Icon(Icons.delete),
+            onPressed: controller.deleteAchivedItem,
+          ),
         ],
       ),
-      body: Obx(
-        () {
-          return controller.archivedItems.length == 0
-              ? Center(
-                  child: Text(
-                    'Empty List',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                )
-              : ListView.builder(
-                  itemCount: controller.archivedItems.length,
-                  itemBuilder: (context, indext) {
-                    return Card(
-                      elevation: 10,
-                      child: ListTile(
-                        title: Text(
-                            '${controller.archivedItems[indext].productName}'),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Obx(
+          () {
+            return controller.archivedItems.length == 0
+                ? Center(
+                    child: Text(
+                      'Empty List',
+                      style: TextStyle(
+                        fontSize: 20,
                       ),
-                    );
-                  });
-        },
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: controller.archivedItems.length,
+                    itemBuilder: (context, indext) {
+                      return Card(
+                        elevation: 10,
+                        child: ListTile(
+                          title: Text(
+                              '${controller.archivedItems[indext].productName}'),
+                        ),
+                      );
+                    });
+          },
+        ),
       ),
     );
   }
