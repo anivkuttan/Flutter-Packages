@@ -1,0 +1,64 @@
+import 'package:flutter/material.dart';
+import 'dart:convert';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: HomePage(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('AppBar Json'),
+      ),
+      body: Center(
+        child: FutureBuilder(
+          // to pass the json file to future builder
+          // to get the data inside the builder parameter
+          future: DefaultAssetBundle.of(context).loadString('assets/file.json'),
+          builder: (context, snapShot) {
+            // checking builder parameter
+            // snapShot.hasData to do something
+            // snapShot.hasError to do on Error Handling
+
+            if (snapShot.hasData) {
+              // print(snapShot.toString());
+              // snapShot parameter gives jsonData on String type
+              // we need to convert the data
+              final data = json.decode(snapShot.data.toString());
+              // print("${data.length}");
+              return ListView.builder(
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text('${data[index]['name']}'),
+                    subtitle: Text('${data[index]['age']}'),
+                    trailing: Text("${data[index]['hair_color']}"),
+                  );
+                },
+              );
+            } else {
+              return CircularProgressIndicator();
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
