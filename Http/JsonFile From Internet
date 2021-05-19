@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:convert'; // to conver the json file
+import 'dart:async';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: HomePage(),
-      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -22,42 +20,78 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future<String> getHttpString() async {
-    final url = 'https://thegrowingdeveloper.org/apiview?id=1';
-    final responce = await http.get(Uri.parse(url));
-    if (responce.statusCode == 200) {
-      return json.decode(responce.body);
+  Future fetchData;
+  Future<List<User>> getData() async {
+    // geting responce(data) from internet
+    http.Response res = await http
+        .get(Uri.parse('https://jsonplaceholder.typicode.com/albums'));
+    // checking data loaded correctly
+    // 200 means 'ok' data sucessfully loaded
+    if (res.statusCode == 200) {
+      // to convert the responce data to the json data
+
+      List<dynamic> resBody = json.decode(res.body);
+      // resBody have the list of json data it pass throught the map
+      // single Data convert to the Dart modal class (User) and save to list (.toList)
+      List<User> item = resBody.map((data) => User.fromJson(data)).toList();
+      //returning List<User>
+      return item;
     } else {
-      throw Exception('Failed to load file');
+      throw Exception('Faild to load');
     }
   }
 
   @override
   void initState() {
     super.initState();
-    getHttpString();
+    // calling the Future method
+    fetchData = getData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('AppBar Json'),
+        title: Text('Fecting Data'),
       ),
       body: Center(
         child: FutureBuilder(
-            future: getHttpString(),
-            builder: (context, snapShot) {
-              if (snapShot.hasData) {
-                final data = snapShot.data;
-                return Text('${data[0]}');
-              } else if (snapShot.hasError) {
-                return Text("${snapShot.error}");
-              } else {
-                return CircularProgressIndicator();
-              }
-            }),
+          future: fetchData,
+          builder: (context, snapShot) {
+            if (snapShot.hasData) {
+              List<User> data = snapShot.data;
+              //debugPrint('Anikuttan: $data');
+              return ListView.builder(
+                  itemCount: snapShot.data.length,
+                  itemBuilder: (context, index) {
+                    // debugPrint('Anikuttan2 : ${data[index].id}');
+                    return ListTile(
+                      title: Text('${data[index].id}'),
+                      subtitle: Text('${data[index].title}'),
+                    );
+                  });
+            } else {
+              return CircularProgressIndicator();
+            }
+          },
+        ),
       ),
+    );
+  }
+}
+
+class User {
+  final int userId;
+  final int id;
+  final String title;
+
+  User({this.userId, this.id, this.title});
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      userId: json["userId"] as int,
+      id: json["id"] as int,
+      title: json["title"] as String,
     );
   }
 }
