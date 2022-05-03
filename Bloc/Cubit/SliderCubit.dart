@@ -64,7 +64,9 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Route route = MaterialPageRoute(
+              // bloc provider.value use for push bloc value into next page
               builder: (_) => BlocProvider.value(
+                    // value parameter must be old context not new context
                     value: context.read<SliderCubit>(),
                     child: const SecondPage(),
                   ));
