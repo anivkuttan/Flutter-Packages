@@ -12,8 +12,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomePage(),
+    return BlocProvider(
+      create: (context) => ListBloc(),
+      child: const MaterialApp(
+        home: HomePage(),
+      ),
     );
   }
 }
@@ -33,13 +36,18 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Bloc'),
       ),
       body: Center(
-        child: ListView.builder(
-            itemCount: 4,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text('Hello $index'),
-              );
-            }),
+        child: BlocBuilder<ListBloc, ListState>(
+          builder: (context, state) {
+            return ListView.builder(
+                itemCount: state.allList.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(state.allList[index].name),
+                    subtitle: Text('${state.allList[index].age}'),
+                  );
+                });
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -74,6 +82,8 @@ class FormPage extends StatefulWidget {
 }
 
 class _FormPageState extends State<FormPage> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController ageController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,14 +94,16 @@ class _FormPageState extends State<FormPage> {
           padding: const EdgeInsets.all(18.0),
           child: Column(
             children: [
-              const TextField(
-                decoration: InputDecoration(
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
                   label: Text('Name'),
                 ),
               ),
               const SizedBox(height: 20),
-              const TextField(
-                decoration: InputDecoration(
+              TextField(
+                controller: ageController,
+                decoration: const InputDecoration(
                   label: Text('Age'),
                 ),
               ),
@@ -102,6 +114,10 @@ class _FormPageState extends State<FormPage> {
                   child: ElevatedButton(
                     child: const Text('Add Person'),
                     onPressed: () {
+                      final name = nameController.text;
+                      final age = int.parse(ageController.text);
+                      final newPerson = Person(name: name, age: age);
+                      context.read<ListBloc>().add(AddEvent(newPerson: newPerson));
                       Navigator.of(context).pop();
                     },
                   ))
@@ -111,16 +127,9 @@ class _FormPageState extends State<FormPage> {
   }
 }
 
-abstract class ListState {
-  List<Person> itemList;
-  ListState({this.itemList = const []});
-}
-
-class DataLoaedState extends ListState {}
-
-class AddListState extends ListState {
-  List<Person> displayList;
-  AddListState({required this.displayList});
+class ListState {
+  List<Person> allList;
+  ListState({this.allList = const []});
 }
 
 class ErrorState extends ListState {
@@ -137,22 +146,17 @@ class AddEvent extends ListEvent {
   AddEvent({required this.newPerson}) : super();
 }
 
-// class ListblocBloc extends Bloc<ListblocEvent, ListblocState> {
-//   ListblocBloc() : super(InitialList(list: const [])) {
-//     on<AddEvent>((event, emit) {
-
-//     });
-//   }
-// }
-
 class ListBloc extends Bloc<ListEvent, ListState> {
   ListBloc() : super(InitialState()) {
-    on<AddEvent>(
-      (event, emit) => emit(
-        AddListState(
-          displayList: state.itemList.add(event.newPerson),
+    on<AddEvent>((event, emit) {
+      final state = this.state;
+      emit(
+        ListState(
+          allList:
+              //  state.allList..add(event.newPerson),
+              List.from(state.allList)..add(event.newPerson),
         ),
-      ),
-    );
+      );
+    });
   }
 }
