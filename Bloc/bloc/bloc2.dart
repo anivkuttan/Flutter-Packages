@@ -1,4 +1,3 @@
-import 'package:bloc_sample/View/home_page.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,14 +37,18 @@ class _HomePageState extends State<HomePage> {
       body: Center(
         child: BlocBuilder<ListBloc, ListState>(
           builder: (context, state) {
-            return ListView.builder(
-                itemCount: state.allList.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(state.allList[index].name),
-                    subtitle: Text('${state.allList[index].age}'),
-                  );
-                });
+            if (state is InitialState) {
+              return Center(child: Text(state.initialMessage));
+            } else {
+              return ListView.builder(
+                  itemCount: state.allList.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(state.allList[index].name),
+                      subtitle: Text('${state.allList[index].age}'),
+                    );
+                  });
+            }
           },
         ),
       ),
@@ -137,7 +140,10 @@ class ErrorState extends ListState {
   ErrorState({required this.errorMessage});
 }
 
-class InitialState extends ListState {}
+class InitialState extends ListState {
+  String initialMessage;
+  InitialState({required this.initialMessage});
+}
 
 abstract class ListEvent {}
 
@@ -147,13 +153,13 @@ class AddEvent extends ListEvent {
 }
 
 class ListBloc extends Bloc<ListEvent, ListState> {
-  ListBloc() : super(InitialState()) {
+  ListBloc() : super(InitialState(initialMessage: 'Empty List')) {
     on<AddEvent>((event, emit) {
       final state = this.state;
       emit(
         ListState(
           allList:
-              //  state.allList..add(event.newPerson),
+              //  state.allList..add(event.newPerson),<==its not work
               List.from(state.allList)..add(event.newPerson),
         ),
       );
